@@ -53,4 +53,8 @@ public class Connections {
 			e = e.next;
 		}
 	}
+	
+	private void sendMessage(Nodes n, Message m) {
+		
+	}
 }
