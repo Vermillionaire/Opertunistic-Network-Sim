@@ -1,3 +1,5 @@
+import java.util.Random;
+
 /*
  * To-Do:
  * Message Queue
@@ -13,6 +15,7 @@
 class Position {
 	int x;
 	int y;
+	int rad;
 }
 
 
@@ -40,8 +43,15 @@ public class Nodes implements Runnable{
 	private String name;
 	private ToRun code;			//Roughting algorithm to run
 	private Relationship rel;	//Current status of the 
-	private int radius;			//Radius is the distance from a node that it can connect to
-	public Message buffer[] = new Message[10];
+
+	public Nodes(int x, int y) {
+		pos = new Position();
+		pos.x = x;
+		pos.y = y;
+		pos.rad = (new Random()).nextInt(3) + 4;
+		
+		System.out.println(pos.rad);
+	}
 	
 	@Override
 	public void run() {
@@ -84,6 +94,10 @@ public class Nodes implements Runnable{
 	
 	public Edge getEdge() {
 		return edges;
+	}
+	
+	public Position getPos() {
+		return pos;
 	}
 	
 	

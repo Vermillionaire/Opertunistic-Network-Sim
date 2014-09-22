@@ -54,7 +54,4 @@ public class Connections {
 		}
 	}
 	
-	private void sendMessage(Nodes n, Message m) {
-		
-	}
 }
