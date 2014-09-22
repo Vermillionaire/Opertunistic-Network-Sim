@@ -36,27 +36,51 @@ public class Graph {
 	private void buildGraph() {
 		
 		for (int i=0; i<all.length; i++) {
-			for (int j=0; j<all.length; j++) {
+			for (int j=i; j<all.length; j++) {
 				if (inRange(all[i],all[j])) 
 					all[i].addEdge(all[j]);
 				
 			}
 		}
+		
+		
+		/////////////////Testing Code//////////////////////////////
+		Connections c = new Connections();
+		
+		all[(new Random()).nextInt(numNodes)].setMaster();
+		all[(new Random()).nextInt(numNodes)].setMaster();
+		all[(new Random()).nextInt(numNodes)].setMaster();
+		
+		for (int i=0; i<all.length; i++) {
+			if (all[i].getRel() == Relationship.Master)
+				continue;
+			
+			Edge e = c.search(all[i]);
+			
+			if (e != null)
+				try {
+					c.connect(all[i], e);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		}
+		/////////////////Delete Later///////////////////////////////////
 	}
 	
-	private int distance(Position a, Position b) {
+	private double distance(Position a, Position b) {
 		double x = Math.abs(a.x - b.x);
 		double y = Math.abs(a.y - b.y);
 		
 		System.out.print("subx =" + x + " sub7 =" + y + " ");
-		return (int) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
 	
 	private boolean inRange(Nodes here, Nodes there) {
-		int d = distance(here.getPos(), there.getPos());
+		double d = distance(here.getPos(), there.getPos());
 		
 		System.out.print("distance = " + d + " rad = " + here.getPos().rad + " [ " + here.toString() + "(" + here.getPos().x +","+here.getPos().y+")  "+ there.toString() +"("+there.getPos().x+","+here.getPos().y+") ]");
-		if (here.getPos().rad >= d) {
+		if (here.getPos().rad >= d || there.getPos().rad >=d) {
 			System.out.println(" -> true");
 			return true;
 		}
@@ -68,5 +92,8 @@ public class Graph {
 	public static void main(String[] args) {
 		Graph test = new Graph();
 		GUI display = new GUI(test);
+	
+		
+		
 	}
 }

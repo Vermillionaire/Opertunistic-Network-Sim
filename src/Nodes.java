@@ -40,8 +40,10 @@ public class Nodes implements Runnable{
 		pos = new Position();
 		pos.x = x;
 		pos.y = y;
-		pos.rad = (new Random()).nextInt(3) + 4;
+		pos.rad = (new Random()).nextInt(3) + 3;
 		name = s;
+		
+		rel = Relationship.Isolated;
 	;
 	}
 	

@@ -34,11 +34,14 @@ public class GUI implements ActionListener{
 		edges.addActionListener(this);
 		JButton newn = new JButton("New");
 		newn.addActionListener(this);
+		JButton connect = new JButton("Connections");
+		connect.addActionListener(this);
 		
 		buttons.add(radius);
 		buttons.add(lines);
 		buttons.add(edges);
 		buttons.add(newn);
+		buttons.add(connect);
 		
 		c.add(buttons);
 		
@@ -52,6 +55,7 @@ public class GUI implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
+		
 		if (arg0.getActionCommand() == "Lines")
 			d.drawLines = !d.drawLines;
 		else if (arg0.getActionCommand() == "Radius")
@@ -60,6 +64,8 @@ public class GUI implements ActionListener{
 			d.drawEdges = !d.drawEdges;
 		else if (arg0.getActionCommand() == "New")
 			d.newGraph();
+		else if (arg0.getActionCommand() == "Connections")
+			d.drawConnections = !d.drawConnections;
 		
 	
 		window.repaint();
@@ -76,8 +82,8 @@ class Draw extends JPanel {
 	private Graph grr;
 	public boolean drawRadius = false;
 	public boolean drawLines = true;
-	public boolean drawEdges = true;
-	
+	public boolean drawEdges = false;
+	public boolean drawConnections = true;
 	public Draw(Graph g){
 		grr = g;
 		this.setPreferredSize(new Dimension(w,w));
@@ -89,7 +95,7 @@ class Draw extends JPanel {
 	
 	public void paintComponent(Graphics g) {
 		
-		
+		g.drawRect(m, m, w-m*2, h-m*2);
 		if (drawLines) 
 			for (int i=0; i<10; i++) {
 				g.drawLine(i*50 + m,0+m,i*50 + m,h-m);
@@ -107,7 +113,7 @@ class Draw extends JPanel {
 				
 				do {
 					//System.out.println("Edge");
-					g.drawLine((grr.all[i].getPos().x*50 + m), (grr.all[i].getPos().y*50 + m), (e.n.getPos().x*50 + m), (e.n.getPos().x*50 + m));
+					g.drawLine((grr.all[i].getPos().x*50 + m), (grr.all[i].getPos().y*50 + m), (e.n.getPos().x*50 + m), (e.n.getPos().y*50 + m));
 					e = e.next;
 				}while (e != null);
 				//System.out.println("NextNode");
@@ -115,22 +121,51 @@ class Draw extends JPanel {
 			g.setColor(Color.black);
 		}
 		
+		if (drawConnections) {
+			g.setColor(Color.GREEN);
+			for (int i=0; i<grr.all.length; i++) {
+				Edge e = grr.all[i].getEdge();
+				
+				if (e == null)
+					break;
+				
+				do {
+					if (!e.open)
+						g.drawLine((grr.all[i].getPos().x*50 + m), (grr.all[i].getPos().y*50 + m), (e.n.getPos().x*50 + m), (e.n.getPos().y*50 + m));
+					e = e.next;
+				}while (e != null);
+
+			}
+			g.setColor(Color.black);
+		}
 		
-		g.drawRect(m, m, w-m*2, h-m*2);
+		
+		
 		
 		
 		
 		int radius = 16;
 		for (int i=0; i<grr.all.length; i++) {
-			g.setColor(Color.red);
+			
+			
+			if (grr.all[i].getRel() == Relationship.Isolated)
+				g.setColor(Color.red);
+			else if (grr.all[i].getRel() == Relationship.Master )
+					g.setColor(Color.blue);
+			else 
+				g.setColor(Color.cyan);
+			
 			g.fillOval( (grr.all[i].getPos().x*50 + m) - radius/2, (grr.all[i].getPos().y*50 + m) - radius/2, radius, radius);
 			
-			if (drawRadius) {
-				g.setColor(Color.green);
 			
-				int tr = grr.all[i].getPos().rad*50;
-				g.drawOval((grr.all[i].getPos().x*50 + m) - tr/2, (grr.all[i].getPos().y*50 + m) - tr/2, tr, tr);
+		}
 		
+		if (drawRadius) {
+			for (int i=0; i<grr.all.length; i++) {
+				g.setColor(Color.green);
+		
+				int tr = grr.all[i].getPos().rad*50*2;
+				g.drawOval((grr.all[i].getPos().x*50 + m) - tr/2, (grr.all[i].getPos().y*50 + m) - tr/2, tr, tr);
 			}
 		}
 	}

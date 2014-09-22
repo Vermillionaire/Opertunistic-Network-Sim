@@ -5,8 +5,8 @@
  */
 public class Connections {
 
-	//Input current node, output found node
-	private Edge search(Nodes n) {
+	//Input current node, output found edge
+	public Edge search(Nodes n) {
 		Edge e = n.getEdge();
 		while (e != null) {
 			if (e.open && e.n.getRel()== Relationship.Master) {
@@ -18,27 +18,27 @@ public class Connections {
 		return null;
 	}
 	
-	//Input node to connect to
-	private synchronized void connect(Nodes n, Edge e) throws InterruptedException {
-		Nodes c = e.n;
-		if(c.canConnect()) {
+	//Input current node
+	public synchronized void connect(Nodes n, Edge e) throws InterruptedException {
+		Nodes master = e.n;
+		if(master.canConnect()) {
 			
-			while(c.clock)
+			while(master.clock)
 				wait();
 			
-			c.clock = true;
-			c.plusConnection();
-			c.clock = false;
+			master.clock = true;
+			master.plusConnection();
+			master.clock = false;
 			notifyAll();
 			
 			
 			e.open = false;
 			n.setSlave();
-			Thread.sleep(1000);
+			///Thread.sleep(1000);
 		}
 	}
 	
-	private void disconnect(Nodes n){
+	public void disconnect(Nodes n){
 		
 		n.setIso();
 		
