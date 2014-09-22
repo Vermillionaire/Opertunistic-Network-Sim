@@ -1,13 +1,5 @@
 import java.util.Random;
 
-/*
- * To-Do:
- * Message Queue
- * Connection protocols
- * Graph Builder
- * Gui
- * Make ToRun more abstract
- */
 
 //Position sets the physical location of the node relative to other nodes.
 //The position is only important to the graph when it is being built because the 
@@ -44,13 +36,13 @@ public class Nodes implements Runnable{
 	private ToRun code;			//Roughting algorithm to run
 	private Relationship rel;	//Current status of the 
 
-	public Nodes(int x, int y) {
+	public Nodes(int x, int y, String s) {
 		pos = new Position();
 		pos.x = x;
 		pos.y = y;
 		pos.rad = (new Random()).nextInt(3) + 4;
-		
-		System.out.println(pos.rad);
+		name = s;
+	;
 	}
 	
 	@Override
@@ -127,6 +119,31 @@ public class Nodes implements Runnable{
 	
 	public void setIso() {
 		rel = Relationship.Isolated;
+	}
+	
+	public String toString() {
+		return name;
+	}
+	public void addEdge(Nodes N) {
+		if( edges == null) {
+			edges = new Edge();
+			edges.n = N;
+			edges.open = true;
+			edges.next = null;
+			return;
+		}
+		
+		Edge tmp = edges;
+		while (tmp.next != null) {
+			tmp = tmp.next;
+		}
+		
+		tmp.next = new Edge();
+		tmp = tmp.next;
+		tmp.n = N;
+		tmp.open = true;
+		tmp.next = null;
+		
 	}
 	
 }

@@ -30,9 +30,15 @@ public class GUI implements ActionListener{
 		radius.addActionListener(this);
 		JButton lines = new JButton("Lines");
 		lines.addActionListener(this);
+		JButton edges = new JButton("Edges");
+		edges.addActionListener(this);
+		JButton newn = new JButton("New");
+		newn.addActionListener(this);
 		
 		buttons.add(radius);
 		buttons.add(lines);
+		buttons.add(edges);
+		buttons.add(newn);
 		
 		c.add(buttons);
 		
@@ -50,6 +56,10 @@ public class GUI implements ActionListener{
 			d.drawLines = !d.drawLines;
 		else if (arg0.getActionCommand() == "Radius")
 			d.drawRadius = !d.drawRadius;
+		else if (arg0.getActionCommand() == "Edges")
+			d.drawEdges = !d.drawEdges;
+		else if (arg0.getActionCommand() == "New")
+			d.newGraph();
 		
 	
 		window.repaint();
@@ -64,12 +74,17 @@ class Draw extends JPanel {
 	private int h = 550;
 	private int m = 25;
 	private Graph grr;
-	public boolean drawRadius = true;
+	public boolean drawRadius = false;
 	public boolean drawLines = true;
+	public boolean drawEdges = true;
 	
 	public Draw(Graph g){
 		grr = g;
 		this.setPreferredSize(new Dimension(w,w));
+	}
+	
+	public void newGraph() {
+		grr.resetNodes();
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -80,6 +95,25 @@ class Draw extends JPanel {
 				g.drawLine(i*50 + m,0+m,i*50 + m,h-m);
 				g.drawLine(0+m,i*50+m,w-m,i*50+m);
 			}
+		
+		
+		if (drawEdges) {
+			g.setColor(Color.blue);
+			for (int i=0; i<grr.all.length; i++) {
+				Edge e = grr.all[i].getEdge();
+				
+				if (e == null)
+					break;
+				
+				do {
+					//System.out.println("Edge");
+					g.drawLine((grr.all[i].getPos().x*50 + m), (grr.all[i].getPos().y*50 + m), (e.n.getPos().x*50 + m), (e.n.getPos().x*50 + m));
+					e = e.next;
+				}while (e != null);
+				//System.out.println("NextNode");
+			}
+			g.setColor(Color.black);
+		}
 		
 		
 		g.drawRect(m, m, w-m*2, h-m*2);
