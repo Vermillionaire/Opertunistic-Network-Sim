@@ -1,6 +1,10 @@
-This is a application to simulate enviroments that a opertunisric network might exist in.
+This is a application is to simulate a opertunisric network in action.
 
 Link: http://en.wikipedia.org/wiki/Opportunistic_Mobile_Social_Networks
+
+<blockquote>
+"Unlike mobile ad hoc networks (MANETs) that require end-to-end communication paths for message exchange, the communication in opportunistic mobile social networks takes place on the establishment of opportunistic contacts among mobile nodes, without availability of end-to-end message routing paths."
+<\blockquote>
 
 The enviroment is a area with multiple different cell phones trying to connect to each other through wifi. As time goes on, nodes will connect and disconnect to each other forming small networks that will pass on new messages or messages they got from other nodes. As this happens, messages should spead to all nodes in a viral manner.
 
