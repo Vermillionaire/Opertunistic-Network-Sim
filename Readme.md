@@ -2,7 +2,7 @@ This is a application to simulate enviroments that a opertunisric network might 
 
 Link: http://en.wikipedia.org/wiki/Opportunistic_Mobile_Social_Networks
 
-The enviroment is a area with multiple different cell phones trying to connect to each other through wifi. As time goes on, nodes will connect and disconnect to each other form ing small networks that will pass message to eachother that they get from others. As this happens, messages should spead to all nodes in a viral manner.
+The enviroment is a area with multiple different cell phones trying to connect to each other through wifi. As time goes on, nodes will connect and disconnect to each other forming small networks that will pass on new messages or messages they got from other nodes. As this happens, messages should spead to all nodes in a viral manner.
 
 ![alt tag](images/screen1.png)
 - Red: 		Isolated Nodes
