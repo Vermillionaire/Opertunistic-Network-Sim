@@ -36,12 +36,15 @@ public class GUI implements ActionListener{
 		newn.addActionListener(this);
 		JButton connect = new JButton("Connections");
 		connect.addActionListener(this);
+		JButton names = new JButton("Names");
+		names.addActionListener(this);
 		
 		buttons.add(radius);
 		buttons.add(lines);
 		buttons.add(edges);
 		buttons.add(newn);
 		buttons.add(connect);
+		buttons.add(names);
 		
 		c.add(buttons);
 		
@@ -66,7 +69,8 @@ public class GUI implements ActionListener{
 			d.newGraph();
 		else if (arg0.getActionCommand() == "Connections")
 			d.drawConnections = !d.drawConnections;
-		
+		else if (arg0.getActionCommand() == "Names")
+			d.drawNames = !d.drawNames;
 	
 		window.repaint();
 		
@@ -84,13 +88,15 @@ class Draw extends JPanel {
 	public boolean drawLines = true;
 	public boolean drawEdges = false;
 	public boolean drawConnections = true;
+	public boolean drawNames = false;
+	
 	public Draw(Graph g){
 		grr = g;
 		this.setPreferredSize(new Dimension(w,w));
 	}
 	
 	public void newGraph() {
-		grr.resetNodes();
+		grr = new Graph();
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -143,7 +149,7 @@ class Draw extends JPanel {
 		
 		
 		
-		
+		//////////////////////////////Draws Nodes on the graph///////////////////////////////////
 		int radius = 16;
 		for (int i=0; i<grr.all.length; i++) {
 			
@@ -157,8 +163,14 @@ class Draw extends JPanel {
 			
 			g.fillOval( (grr.all[i].getPos().x*50 + m) - radius/2, (grr.all[i].getPos().y*50 + m) - radius/2, radius, radius);
 			
-			
+
+			if (drawNames) {
+				g.setColor(Color.GRAY);
+				g.drawString(grr.all[i].toString(), grr.all[i].getPos().x*50 + m - 10, grr.all[i].getPos().y*50 + m - 10);
+			}
 		}
+		///////////////////////////////////////////////////////////////////////////////////////////
+		
 		
 		if (drawRadius) {
 			for (int i=0; i<grr.all.length; i++) {

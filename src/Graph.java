@@ -11,37 +11,53 @@ public class Graph {
 	
 	private int numNodes = 15;
 	Nodes all[];
+	
+	
 	public Graph() {
-		
-		all = randomNodes(numNodes);
+		randomNodes();
 		buildGraph();
 	}
 	
-	public void resetNodes() {
-		all = randomNodes(numNodes);
-		buildGraph();
+	
+	private void randomNodes() {
+		all = new Nodes[numNodes];
+		int p[] = new int[2];
+		boolean same = false;
+		for (int i=0; i<numNodes; i++) {
+			p[0] = (new Random()).nextInt(10);
+			p[1] = (new Random()).nextInt(10);
+			
+			if (samePoint(p[0],p[1])) {
+				i--;
+				continue;
+			}
+			all[i] = new Nodes(p[0],p[1],"N:"+i);
+		}
+	
 	}
 	
-	private Nodes[] randomNodes(int num) {
-		Nodes[] n = new Nodes[num];
-		
-		for (int i=0; i<num; i++) {
-			n[i] = new Nodes((new Random()).nextInt(10), (new Random()).nextInt(10), "Node:"+i);
-			System.out.println("x = " + n[i].getPos().x +"  y = "+ n[i].getPos().y);
+	private boolean samePoint(int x, int y) {
+		for (int i=0; i<numNodes; i++) {
+			if (all[i] == null)
+				return false;
+			if (all[i].getPos().x == x && all[i].getPos().y == y)
+				return true;
 		}
 		
-		return n;
+		return false;
 	}
 	
+	//Builds edges between all nodes that can connect
 	private void buildGraph() {
 		
 		for (int i=0; i<all.length; i++) {
-			for (int j=i; j<all.length; j++) {
+			for (int j=0; j<all.length; j++) {
 				if (inRange(all[i],all[j])) 
 					all[i].addEdge(all[j]);
 				
 			}
 		}
+		
 		
 		
 		/////////////////Testing Code//////////////////////////////
@@ -80,7 +96,7 @@ public class Graph {
 		double d = distance(here.getPos(), there.getPos());
 		
 		System.out.print("distance = " + d + " rad = " + here.getPos().rad + " [ " + here.toString() + "(" + here.getPos().x +","+here.getPos().y+")  "+ there.toString() +"("+there.getPos().x+","+here.getPos().y+") ]");
-		if (here.getPos().rad >= d || there.getPos().rad >=d) {
+		if (here.getPos().rad >= d && there.getPos().rad >=d) {
 			System.out.println(" -> true");
 			return true;
 		}
