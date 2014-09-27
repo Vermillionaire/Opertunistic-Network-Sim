@@ -1,24 +1,31 @@
 import java.util.Random;
 
-/*
- * Builds the graph of nodes based on their distances to each other
- * 
- * To-Do: creates edges for graphs and builds lines on gui of edges
- */
+
+
 public class Graph {
-	public static boolean start = false;
-	public static boolean pause = false;
 	
 	private int numNodes = 15;
 	Nodes all[];
-	
+	Thread nodes[];
 	
 	public Graph() {
 		randomNodes();
 		buildGraph();
+		makeThreads();
+		
+	}
+	
+	//Assigns the nodes to a thread so they can run independently
+	private void makeThreads() {
+		nodes = new Thread[numNodes];
+		
+		for (int i=0; i<numNodes; i++) {
+			nodes[i] = new Thread(all[i]);
+		}
 	}
 	
 	
+	//Randomly generates nodes on the graph
 	private void randomNodes() {
 		all = new Nodes[numNodes];
 		int p[] = new int[2];
@@ -36,6 +43,8 @@ public class Graph {
 	
 	}
 	
+	
+	//Checks if another node already exists on that point
 	private boolean samePoint(int x, int y) {
 		for (int i=0; i<numNodes; i++) {
 			if (all[i] == null)
@@ -57,33 +66,10 @@ public class Graph {
 				
 			}
 		}
-		
-		
-		
-		/////////////////Testing Code//////////////////////////////
-		Connections c = new Connections();
-		
-		all[(new Random()).nextInt(numNodes)].setMaster();
-		all[(new Random()).nextInt(numNodes)].setMaster();
-		all[(new Random()).nextInt(numNodes)].setMaster();
-		
-		for (int i=0; i<all.length; i++) {
-			if (all[i].getRel() == Relationship.Master)
-				continue;
-			
-			Edge e = c.search(all[i]);
-			
-			if (e != null)
-				try {
-					c.connect(all[i], e);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-		}
-		/////////////////Delete Later///////////////////////////////////
 	}
 	
+	
+	//Calculates the distance between two points
 	private double distance(Position a, Position b) {
 		double x = Math.abs(a.x - b.x);
 		double y = Math.abs(a.y - b.y);
@@ -92,6 +78,9 @@ public class Graph {
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
 	
+	//Compares the distance between two nodes to their radius 
+	//If they both have a greater radius than the distance,
+	//then they are in range and can connect
 	private boolean inRange(Nodes here, Nodes there) {
 		double d = distance(here.getPos(), there.getPos());
 		
@@ -105,11 +94,29 @@ public class Graph {
 		return false;
 	}
 	
+	public void startThreads() {
+		for (int i=0; i< numNodes; i++) {
+			nodes[i].start();
+		}
+	}
+	
+	public void stopThreads() {
+		for (int i=0; i< numNodes; i++) {
+			all[i].stop = true;;
+		}
+	}
+
+	
 	public static void main(String[] args) {
 		Graph test = new Graph();
 		GUI display = new GUI(test);
 	
+		Thread screen = new Thread(display);
+		screen.start();
+		screen.yield();
 		
+		test.startThreads();
+		test.all[10].getRunning().setMessageID(22);
 		
 	}
 }
