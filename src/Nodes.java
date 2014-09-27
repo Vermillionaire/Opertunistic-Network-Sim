@@ -35,7 +35,12 @@ public class Nodes implements Runnable{
 	private String name;
 	private ToRun code;			//Roughting algorithm to run
 	private Relationship rel;	//Current status of the 
-
+	public boolean stop = false;
+	
+	//Edge that the node is currently connected to
+	private Edge isConnectedTo;
+	
+	//Constructor
 	public Nodes(int x, int y, String s) {
 		pos = new Position();
 		pos.x = x;
@@ -44,44 +49,76 @@ public class Nodes implements Runnable{
 		name = s;
 		
 		rel = Relationship.Isolated;
-	;
+	
 	}
 	
+	
+	//Thread that runs the code in each node
 	@Override
 	public void run() {
+		code = new ToRun(this);
 		
-		do {
-			try {	
-				Thread.sleep(100); 
+		while(true) {
+			
+			//System.out.println(this.toString()+ " checking in!");
+			//Kills thread
+			if (stop)
+				break;
+			
+			/*/if threads are paused,sleep longer
+			do {
+				try {	
+					Thread.sleep(250); 
 			} 
-			catch (InterruptedException e) {
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} while(Graph.pause);
+		*/
+		
+			if (code == null) {
+				System.out.println("Error: Node " + name + " has no code to run");
+				return;
+			}
+		
+		
+			switch(rel) {
+				case Slave: 
+					code.Slave();
+					break;
+				case Master:
+					code.Master();
+					break;
+				case Isolated:
+					Thread.yield();
+					code.Idle();
+					break;
+			}
+			
+			
+			//Sleep 100ms everytime it loops
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} while(!Graph.start || Graph.pause);
-		
-		
-		if (code == null) {
-			System.out.println("Error: Node " + name + " has no code to run");
-			return;
-		}
-		
-		
-		switch(rel) {
-			case Slave: 
-				code.Slave(this);
-				break;
-			case Master:
-				code.Master(this);
-				break;
-			case Isolated:
-				Thread.yield();
-				code.Idle(this);
-				break;
+			
 		}
 
 		
 	}
 	
+	public void setIsConnectedTo(Edge n) {
+		isConnectedTo = n;
+	}
+	
+	public Edge getIsConnectedTo() {
+		return isConnectedTo;
+	}
+	public ToRun getRunning() {
+		return code;
+	}
 	public Relationship getRel() {
 		return rel;
 	}
@@ -111,11 +148,17 @@ public class Nodes implements Runnable{
 		numConnections--;
 	}
 	
+	public int getNumConnections() {
+		return numConnections;
+	}
+	
 	public void setSlave() {
+		System.out.println("I am now slave " + this.toString());
 		rel = Relationship.Slave;
 	}
 	
 	public void setMaster() {
+		System.out.println("I am master " + this.toString());
 		rel = Relationship.Master;
 	}
 	
