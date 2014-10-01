@@ -24,6 +24,6 @@ Each node has a connection radius. Any node within the radius, or if it is withi
 ![alt tag](images/screen3.png)
 
 The previos examples were small networks with 15 nodes. The program now supports a large version that has 150 nodes in the network.
-![alt tag](images/connections-new.jpg)
+![alt tag](images/edges-new.jpg)
 ![alt tag](images/nodes-new.jpg)
 
