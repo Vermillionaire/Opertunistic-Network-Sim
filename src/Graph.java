@@ -21,7 +21,7 @@ public class Graph {
 			YMax = 10;
 		}
 		else {
-			numNodes = 250;
+			numNodes = 150;
 			XMax = 50;
 			YMax = 20;
 		}
