@@ -21,7 +21,7 @@ Here is a Photo of all posible connections in the form of a graph
 
 Each node has a connection radius. Any node within the radius, or if it is within someone elses raduis, can be connected to. The graph was built from these.
 
-![alt tag](images/screen3.png)
+![alt tag](images/radius-new.jpg)
 
 The previos examples were small networks with 15 nodes. The program now supports a large version that has 150 nodes in the network.
 ![alt tag](images/edges-new.jpg)
