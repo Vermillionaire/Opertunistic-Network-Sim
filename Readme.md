@@ -10,7 +10,7 @@ More information on the subject: https://code.google.com/p/social-tracer/wiki/Op
 
 The idea I am trying to simulate is a situation where mobile phones have no other meens of communication (GSM is down, no WiFi), and the establishment of a opertunistic network could be benificial. Each cellphone would be a node in the network either acting as a router or a user of the network. As time goes on, nodes will connect and disconnect to each other forming small networks that will pass on new messages or messages they got from other nodes. At some point in time each node will get the chance to be either a roughter or user. As the network is dynamicaly changes, messages should spead to all nodes in a viral manner.
 
-![alt tag](images/screen1.png)
+![alt tag](images/connections-new.jpg)
 - Red: 		Isolated Nodes
 - Blue: 	Master Noes
 - Cyan:		Nodes connected to Master nodes
@@ -23,4 +23,7 @@ Each node has a connection radius. Any node within the radius, or if it is withi
 
 ![alt tag](images/screen3.png)
 
-The bacic components of the network are done, but there are some bugs in the connection methods. Once the connections are working 100%, each node will be given a thread to manage it's own connections (These are simulated connections, not real network connections). The threads will not be syncronized, making the metwork more realistic. After that the area with the networking algorithms can be toyed with.
+The previos examples were small networks with 15 nodes. The program now supports a large version that has 150 nodes in the network.
+![alt tag](images/connections-new.jpg)
+![alt tag](images/nodes-new.jpg)
+
