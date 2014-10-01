@@ -61,21 +61,10 @@ public class Nodes implements Runnable{
 		while(true) {
 			
 			//System.out.println(this.toString()+ " checking in!");
-			//Kills thread
+			//Kills thread (hopefully)
 			if (stop)
 				break;
 			
-			/*/if threads are paused,sleep longer
-			do {
-				try {	
-					Thread.sleep(250); 
-			} 
-				catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} while(Graph.pause);
-		*/
-		
 			if (code == null) {
 				System.out.println("Error: Node " + name + " has no code to run");
 				return;
@@ -98,7 +87,7 @@ public class Nodes implements Runnable{
 			
 			//Sleep 100ms everytime it loops
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -153,12 +142,10 @@ public class Nodes implements Runnable{
 	}
 	
 	public void setSlave() {
-		System.out.println("I am now slave " + this.toString());
 		rel = Relationship.Slave;
 	}
 	
 	public void setMaster() {
-		System.out.println("I am master " + this.toString());
 		rel = Relationship.Master;
 	}
 	

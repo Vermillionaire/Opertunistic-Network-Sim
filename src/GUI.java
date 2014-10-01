@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -9,10 +10,13 @@ public class GUI implements ActionListener, Runnable{
 	private JFrame window;
 	private Draw d;
 	private long time = 0;
+	private Scale s;
 	
-	public GUI(Graph g) {
-	
+	public GUI(Graph g, Scale s) {
+		this.s = s;
 		
+		
+		//Builds window
 		window = new JFrame();
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -22,7 +26,7 @@ public class GUI implements ActionListener, Runnable{
 		c.setLayout(new BoxLayout(c,BoxLayout.PAGE_AXIS));
 		
 		//Creates new object to draw on
-		d = new Draw(g);
+		d = new Draw(g,s);
 		c.add(d);
 		
 		//Container for buttons
@@ -57,7 +61,7 @@ public class GUI implements ActionListener, Runnable{
 		
 		
 		//Puts window on screen
-		window.setLocation(100,100);
+		//window.setLocation(100,100);
 		window.pack();
 		window.setVisible(true);
 
@@ -80,8 +84,7 @@ public class GUI implements ActionListener, Runnable{
 			d.drawNames = !d.drawNames;
 		else if (arg0.getActionCommand() == "Stop")
 			d.stop();
-		
-		d.stateChange = !d.stateChange;
+	
 	}
 
 	
@@ -92,13 +95,16 @@ public class GUI implements ActionListener, Runnable{
 		
 		time = System.currentTimeMillis();
 		
+		
 		while (true) {
+			
 			try {
 				Thread.sleep(15);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			
 			//if (d.stateChange) {
 				//System.out.println("Painting Window");
@@ -123,62 +129,91 @@ public class GUI implements ActionListener, Runnable{
 class Draw extends JPanel {
 	
 	//dimensions of the window
-	private int w = 550;
-	private int h = 550;
+	private int w;
+	private int h;
+	private int vLines;
+	private int hLines;
+	private int spacing;
 	
-	//?
+	private Scale s;
+	
+	//M = margin padding
 	private int m = 25;
 	private Graph graph;
 	
 	//Values to control what is being displayed
 	public boolean drawRadius = false;
-	public boolean drawLines = true;
+	public boolean drawLines = false;
 	public boolean drawEdges = false;
 	public boolean drawConnections = true;
 	public boolean drawNames = true;
 	
-	//Saves system resources by letting the thread refreshing the 
-	//screen know that the display hasn't changed.
-	public boolean stateChange = false;
 	
 	//Current Frames Per Second of the display
 	public int fps = 0;
 	
 	//Draw constructor
-	public Draw(Graph g){
+	public Draw(Graph g, Scale s){
 		graph = g;
-		this.setPreferredSize(new Dimension(w,w));
+		this.s = s;
+		
+		if (s == Scale.SMALL) {
+			w = 550;
+			h = 550;
+			vLines = 10;
+			hLines = 10;
+			spacing = 50;
+		}
+		else {
+			w = 1300;
+			h = 550;
+			vLines = spacing;
+			hLines = 20;
+			spacing = 25;
+		}
+		
+		this.setPreferredSize(new Dimension(w,h));
 	}
 	
+	//Stops all the threads and creates a new graph
 	public void newGraph() {
 		graph.stopThreads();
-		graph = new Graph();
+		graph = new Graph(s);
 		graph.startThreads();
-		graph.all[10].getRunning().setMessageID(22);
+		graph.all[(new Random()).nextInt(15)].getRunning().setMessageID(22);
 	}
 	
+	//Stops threads in graph
 	public void stop() {
 		graph.stopThreads();
 	}
 	
 	
-	//Function for instruction on how to paint the screen
+	//Function for instructions on how to paint the screen
 	public void paintComponent(Graphics g) {
 		
 		Graphics2D g2 = (Graphics2D)g;
 	    
 	    g2.drawString("FPS: "+fps, 1, 10);
-	    stateChange = !stateChange;
 		
 		g2.drawRect(m, m, w-m*2, h-m*2);
-		if (drawLines) 
-			for (int i=0; i<10; i++) {
-				g2.drawLine(i*50 + m,0+m,i*50 + m,h-m);
-				g2.drawLine(0+m,i*50+m,w-m,i*50+m);
-			}
+		
+		//////////////////////////Draws the grid lines on the graph///////////////////////
+		if (drawLines) {
+			for (int i=0; i<vLines; i++) 
+				g2.drawLine(i*spacing + m,0+m,i*spacing + m,h-m);
+			
+			for (int i=0; i<hLines; i++) 
+				g2.drawLine(0+m,i*spacing+m,w-m,i*spacing+m);
+		}
+		///////////////////////////////////////////////////////////////////////////////////
 		
 		
+		
+		
+		/////////////////////////Draws all the edges on the graph////////////////////////////////
 		if (drawEdges) {
+			
 			g2.setColor(Color.blue);
 			for (int i=0; i<graph.all.length; i++) {
 				Edge e = graph.all[i].getEdge();
@@ -186,17 +221,22 @@ class Draw extends JPanel {
 				if (e == null)
 					break;
 				
+				//Draws line for each edge on the graph
 				do {
-					//System.out.println("Edge");
-					g2.drawLine((graph.all[i].getPos().x*50 + m), (graph.all[i].getPos().y*50 + m), (e.n.getPos().x*50 + m), (e.n.getPos().y*50 + m));
+					g2.drawLine((graph.all[i].getPos().x*spacing + m), (graph.all[i].getPos().y*spacing + m), (e.n.getPos().x*spacing + m), (e.n.getPos().y*spacing + m));
 					e = e.next;
 				}while (e != null);
-				//System.out.println("NextNode");
 			}
 			g2.setColor(Color.black);
 		}
+		//////////////////////////////////////////////////////////////////////////////////////////
 		
+		
+		
+		
+		//////////////////Draws the current edges that are connecting nodes//////////////////////
 		if (drawConnections) {
+			
 			g2.setColor(Color.green);
 			for (int i=0; i<graph.all.length; i++) {
 				Edge e = graph.all[i].getEdge();
@@ -206,25 +246,31 @@ class Draw extends JPanel {
 				
 				do {
 					if (!e.open) {
-						int x1 = (graph.all[i].getPos().x*50 + m);
-						int x2 = (e.n.getPos().x*50 + m);
-						int y1 = (graph.all[i].getPos().y*50 + m);
-						int y2 = (e.n.getPos().y*50 + m);
+						//This Section draws an arrow pointing to node connected to instead
+						// of a regular line
+						int x1 = (graph.all[i].getPos().x*spacing + m);
+						int x2 = (e.n.getPos().x*spacing + m);
+						int y1 = (graph.all[i].getPos().y*spacing + m);
+						int y2 = (e.n.getPos().y*spacing + m);
 						int size = 3;
 						
-						if (Math.abs(y1-y2) >= Math.abs(x1-x2)) {
-							int px[] = {x2,x1-size,x1+size};
-							int py[] = {y2,y1,y1};
-							g2.fillPolygon(px,py, 3);
-							
-						}
-						else {
-							int px[] = {x2,x1,x1};
-							int py[] = {y2,y1-size,y1+size};
-							g2.fillPolygon(px,py, 3);
-						}
 						
-					
+						if (s == Scale.SMALL) {
+							//Two different cases for arrow direction
+							if (Math.abs(y1-y2) >= Math.abs(x1-x2)) {
+								int px[] = {x2,x1-size,x1+size};
+								int py[] = {y2,y1,y1};
+								g2.fillPolygon(px,py, 3);
+							
+							}
+							else {
+								int px[] = {x2,x1,x1};
+								int py[] = {y2,y1-size,y1+size};
+								g2.fillPolygon(px,py, 3);
+							}
+						}
+						else
+							g2.drawLine(x1, y1, x2, y2);
 					}
 						
 					e = e.next;
@@ -233,15 +279,19 @@ class Draw extends JPanel {
 			}
 			g.setColor(Color.black);
 		}
-		
+		/////////////////////////////////////////////////////////////////////////////////////////
 		
 		
 		
 		
 		//////////////////////////////Draws Nodes on the graph///////////////////////////////////
-		int radius = 16;
+		int radius;
+		if (s == Scale.SMALL)
+			radius = 16;
+		else
+			radius = 7;
+		
 		for (int i=0; i<graph.all.length; i++) {
-			
 			
 			if (graph.all[i].getRel() == Relationship.Isolated)
 				g2.setColor(Color.red);
@@ -250,24 +300,27 @@ class Draw extends JPanel {
 			else 
 				g2.setColor(Color.cyan);
 			
-			g2.fillOval( (graph.all[i].getPos().x*50 + m) - radius/2, (graph.all[i].getPos().y*50 + m) - radius/2, radius, radius);
+			g2.fillOval( (graph.all[i].getPos().x*spacing + m) - radius/2, (graph.all[i].getPos().y*spacing + m) - radius/2, radius, radius);
 			
 
 			if (drawNames) {
 				g2.setColor(Color.GRAY);
-				g2.drawString(graph.all[i].toString(), graph.all[i].getPos().x*50 + m - 10, graph.all[i].getPos().y*50 + m - 10);
+				g2.drawString(graph.all[i].toString(), graph.all[i].getPos().x*spacing + m - 10, graph.all[i].getPos().y*spacing + m - 10);
 			}
 		}
 		///////////////////////////////////////////////////////////////////////////////////////////
 		
 		
+		
+		/////////////////////////Draws the radius of connection for each node//////////////////////////
 		if (drawRadius) {
 			for (int i=0; i<graph.all.length; i++) {
 				g2.setColor(Color.green);
 		
-				int tr = graph.all[i].getPos().rad*50*2;
-				g2.drawOval((graph.all[i].getPos().x*50 + m) - tr/2, (graph.all[i].getPos().y*50 + m) - tr/2, tr, tr);
+				int tr = graph.all[i].getPos().rad*spacing*2;
+				g2.drawOval((graph.all[i].getPos().x*spacing + m) - tr/2, (graph.all[i].getPos().y*spacing + m) - tr/2, tr, tr);
 			}
 		}
+		//////////////////////////////////////////////////////////////////////////////////////////////
 	}
 }

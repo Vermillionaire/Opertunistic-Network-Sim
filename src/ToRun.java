@@ -63,7 +63,6 @@ public class ToRun extends Connections implements Behavior{
 			while (e != null) {
 				Nodes other = e.n;
 				if (other.getIsConnectedTo() != null && other.getIsConnectedTo().n.equals(n)) {
-					System.out.print("Sending message");
 					e.n.getRunning().setMessageID(messageID);
 				}
 				e = e.next;

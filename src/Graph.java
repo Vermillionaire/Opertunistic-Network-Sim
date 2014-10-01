@@ -1,14 +1,31 @@
 import java.util.Random;
 
 
-
+/*
+ * Class that contains the graph and the main function of the program.
+ * It is responsible for generating the nodes randomly and building the graph.
+ */
 public class Graph {
 	
-	private int numNodes = 15;
-	Nodes all[];
-	Thread nodes[];
+	private int numNodes = 15;		//Number of nodes on the graph
+	public Nodes all[];					//Array with all the nodes
+	private Thread nodes[];					//Threads for each node
+	private int XMax;
+	private int YMax;
 	
-	public Graph() {
+	public Graph(Scale s) {
+		
+		if (s == Scale.SMALL) {
+			numNodes = 15;
+			XMax = 10;
+			YMax = 10;
+		}
+		else {
+			numNodes = 250;
+			XMax = 50;
+			YMax = 20;
+		}
+		
 		randomNodes();
 		buildGraph();
 		makeThreads();
@@ -29,11 +46,13 @@ public class Graph {
 	private void randomNodes() {
 		all = new Nodes[numNodes];
 		int p[] = new int[2];
-		boolean same = false;
+
 		for (int i=0; i<numNodes; i++) {
-			p[0] = (new Random()).nextInt(10);
-			p[1] = (new Random()).nextInt(10);
+			//Generates random number
+			p[0] = (new Random()).nextInt(XMax+1);
+			p[1] = (new Random()).nextInt(YMax+1);
 			
+			//Checks if there is a node with that point already
 			if (samePoint(p[0],p[1])) {
 				i--;
 				continue;
@@ -56,7 +75,8 @@ public class Graph {
 		return false;
 	}
 	
-	//Builds edges between all nodes that can connect
+	//Builds all possible edges between nodes.
+	//This is determined by their connection radius
 	private void buildGraph() {
 		
 		for (int i=0; i<all.length; i++) {
@@ -74,7 +94,6 @@ public class Graph {
 		double x = Math.abs(a.x - b.x);
 		double y = Math.abs(a.y - b.y);
 		
-		System.out.print("subx =" + x + " sub7 =" + y + " ");
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	}
 	
@@ -84,22 +103,21 @@ public class Graph {
 	private boolean inRange(Nodes here, Nodes there) {
 		double d = distance(here.getPos(), there.getPos());
 		
-		System.out.print("distance = " + d + " rad = " + here.getPos().rad + " [ " + here.toString() + "(" + here.getPos().x +","+here.getPos().y+")  "+ there.toString() +"("+there.getPos().x+","+here.getPos().y+") ]");
 		if (here.getPos().rad >= d && there.getPos().rad >=d) {
-			System.out.println(" -> true");
 			return true;
 		}
-			
-		System.out.println(" -> false");
 		return false;
 	}
 	
+	
+	//Starts all threads
 	public void startThreads() {
 		for (int i=0; i< numNodes; i++) {
 			nodes[i].start();
 		}
 	}
 	
+	//Stops all threads
 	public void stopThreads() {
 		for (int i=0; i< numNodes; i++) {
 			all[i].stop = true;;
@@ -108,15 +126,17 @@ public class Graph {
 
 	
 	public static void main(String[] args) {
-		Graph test = new Graph();
-		GUI display = new GUI(test);
+		
+		Scale size = Scale.LARGE;
+		Graph test = new Graph(size);
+		GUI display = new GUI(test, size);
 	
 		Thread screen = new Thread(display);
 		screen.start();
 		screen.yield();
 		
 		test.startThreads();
-		test.all[10].getRunning().setMessageID(22);
+		test.all[(new Random()).nextInt(15)].getRunning().setMessageID(22);
 		
 	}
 }

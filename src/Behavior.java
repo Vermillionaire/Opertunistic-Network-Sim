@@ -1,8 +1,8 @@
 /*
- * Interface for the only possible behaviors for a node
+ * Interface to describe the possible behaviors of a node
  */
 public interface Behavior {
-	void Idle();
-	void Master();
-	void Slave();
+	void Idle();		//Node is idle
+	void Master();		//Node is receiving connections
+	void Slave();		//Node is connecting
 }

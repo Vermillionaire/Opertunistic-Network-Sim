@@ -1,27 +1,30 @@
 /*
- * This class establishes the communication protocols for the different
- * states, emulating delays that a real WiFi network might experience
- * when disconnecting, connecting, and sending messages
+ * This class provides functions for each node that 
+ * are critical for their operation.
+ * This includes:
+ * -A search function that searches all edges for a node to connect to
+ * -A function that establishes a connection between nodes (the connection between nodes is represented 
+ *  by a boolean value on the edge)
+ * -A function to disconnect two nodes
  */
 public class Connections {
 
 	//Input current node, output found edge
 	public Edge search(Nodes n) {
 		
-		//System.out.println("Searching from "+n.toString());
 		Edge e = n.getEdge();
+		
+		//Iterate through linked list of nodes
 		while (e != null) {
-			//System.out.println("\tChecking "+e.n.toString());
-			//System.out.println("\tRel = "+e.n.getRel());
-			//System.out.println("\tOpen = "+e.open);
+			
+			//If the connection is open and it is a master, return edge
 			if (e.open && e.n.getRel()== Relationship.Master) {
-				//System.out.println("\tFound\n");
 				return e;
 			}
-			//System.out.println("\tNot found\n");
 			e = e.next;
 		}
 		
+		//Returns null if search is unsucessfull
 		return null;
 	}
 	
@@ -29,23 +32,29 @@ public class Connections {
 	//Changes state of current node if successful
 	public synchronized void connect(Nodes n, Edge e) throws InterruptedException {
 		Nodes master = e.n;
-		//System.out.println("\nConnecting to "+master.toString()+" from "+n.toString());
 		
-		//If the master allows, connect
 		if(master.canConnect()) {
 			
-			//c-lock not clock
+			/*
+			 * c-lock not clock
+			 * c-lock is used as a semaphore.
+			 * It probably isn't necessary, but I added it just 
+			 * in case there was a problem with multiple nodes
+			 * trying to connect at once.
+			*/
+			
 			//Checks if connecting to the master is locked
 			while(master.clock)
 				wait();
 			
-			//Locks master while connecting
+			//Locks master while connecting, notify everyone when done
 			master.clock = true;
 			master.plusConnection();
 			master.clock = false;
 			notifyAll();
 			
 			
+			//Sets connection as connected or closed
 			e.open = false;
 			n.setSlave();
 			n.setIsConnectedTo(e);
